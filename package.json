@@ -20,6 +20,7 @@
   "homepage": "https://github.com/lutfianaa3miaww/GlowList_Backend#readme",
   "dependencies": {
     "expess": "^0.0.1-security",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mysql2": "^3.23.2"
   }
 }
