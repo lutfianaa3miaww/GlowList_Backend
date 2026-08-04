@@ -1,0 +1,25 @@
+{
+  "name": "glowlist_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lutfianaa3miaww/GlowList_Backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/lutfianaa3miaww/GlowList_Backend/issues"
+  },
+  "homepage": "https://github.com/lutfianaa3miaww/GlowList_Backend#readme",
+  "dependencies": {
+    "expess": "^0.0.1-security",
+    "express": "^5.2.1"
+  }
+}
