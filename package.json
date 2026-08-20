@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/lutfianaa3miaww/GlowList_Backend#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "expess": "^0.0.1-security",
     "express": "^5.2.1",
