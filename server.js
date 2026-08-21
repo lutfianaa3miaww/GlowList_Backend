@@ -24,13 +24,13 @@ db.connect(err => {
     }
 });
 
-// app.use(express.json());
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Selamat Datang di GlowList API');
 });
 
-app.get('/produk', (req, res) => {
+app.get('/produk', authJWT, (req, res) => {
     const sql = 'SELECT * FROM produk';
     db.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: err });
@@ -38,9 +38,10 @@ app.get('/produk', (req, res) => {
     });
 });
 
-app.post('/produk', (req, res) => {
+app.post('/produk', authJWT, (req, res) => {
     const { judul, deskripsi, harga, id_kategori } = req.body;
-
+    
+    
     if (!judul || !harga || !deskripsi) {
         return res.status(400).json({ message: 'judul, harga dan deskripsi wajib diisi' });
     }
@@ -117,15 +118,15 @@ app.post('/pengguna', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const sql = 'INSERT INTO pengguna (nama, email, password, no_hp) VALUES (?, ?, ?, ?)';
         db.query(sql, [nama, email, hashedPassword, no_hp], (err, result) => {
+
             if (err.code === 'ER_DUP_ENTRY'){
                  return res.status(400).json({
                     message: 'Email sudah terdaftar, gunakan email lain'
                  });
                 }
-                return res.status(500).json({ 
-                    error: 'Terjadi kesalahan pada server'
-                });
-            res.json({
+
+                if(err) return res.status(500).json({ error: (err.sqlMessage )});
+                res.json({ 
                 message: 'Akun berhasil dibuat!',
                 id_pengguna: result.insertId
             });
@@ -166,6 +167,29 @@ app.post('/login', (req, res) => {
         });
     });
 });
+
+app.get('/pengguna/me', authJWT, async (req, res) => {
+        const id_pengguna = req.user.id;
+
+        const sql =
+            `SELECT id_pengguna, nama, email, no_hp FROM pengguna WHERE id_pengguna = ?`;
+                        
+            db.query(sql, [id_pengguna], (err, results) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Gagal mengambil profil pengguna'
+                    });
+                }
+
+            if (results.length === 0) {
+                return res.status(404).json({
+                    message: 'Pengguna tidak ditemukan'
+                });
+            }
+            res.json(results[0]);
+        });
+    })
+
 app.listen(PORT, () => {
     console.log(`Server Glowlist jalan di http://localhost:${PORT}`);
 });
