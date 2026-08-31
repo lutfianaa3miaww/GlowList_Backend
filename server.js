@@ -39,15 +39,15 @@ app.get('/produk', authJWT, (req, res) => {
 });
 
 app.post('/produk', authJWT, (req, res) => {
-    const { judul, deskripsi, harga, id_kategori } = req.body;
+    const { judul, deskripsi, harga, id_kategori, nama_file } = req.body;
     
     
     if (!judul || !harga || !deskripsi) {
         return res.status(400).json({ message: 'judul, harga dan deskripsi wajib diisi' });
     }
     
-    const sql = 'INSERT INTO produk (judul, deskripsi, harga, id_kategori, tgl_input) VALUES (?, ?, ?, ?, NOW())';
-    db.query(sql, [judul, deskripsi, harga, id_kategori], (err, result) => {
+    const sql = 'INSERT INTO produk (judul, deskripsi, harga, id_kategori, nama_file, ) VALUES (?, ?, ?, ?, ?, NOW())';
+    db.query(sql, [judul, deskripsi, harga, id_kategori, nama_file], (err, result) => {
         if(err) return res.status(500).json({ error: err.sqlMessage });
         res.json({
             message: 'Produk berhasil ditambahkan!',
@@ -58,14 +58,14 @@ app.post('/produk', authJWT, (req, res) => {
 
 app.put('/produk/:id_produk', authJWT, (req, res) => {
     const { id_produk } = req.params;
-    const { judul, deskripsi, harga, id_kategori } = req.body;
+    const { judul, deskripsi, harga, id_kategori, nama_file } = req.body;
 
     if (!judul || !harga) {
         return res.status(400).json({ message: 'Judul dan harga wajib diisi' });
     }
 
-    const sql = 'UPDATE produk SET judul=?, deskripsi=?, harga=?, id_kategori=? WHERE id_produk=?';
-    db.query(sql, [judul, deskripsi, harga, id_kategori, id_produk], (err, result) => {
+    const sql = 'UPDATE produk SET judul=?, deskripsi=?, harga=?, id_kategori=?, nama_file=? WHERE id_produk=?';
+    db.query(sql, [judul, deskripsi, harga, id_kategori,nama_file, id_produk], (err, result) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
         res.json({ message: 'Produk berhasil diupdate!' });
     });
