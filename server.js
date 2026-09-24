@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const authJWT = require('./middleware');
+const path = require('path');
+const multer = require('multer');
 const app = express();
 const PORT = 5000;
 
@@ -24,8 +26,19 @@ db.connect(err => {
     }
 });
 
-app.use(express.json());
+app.use('/uploads', express.static(path.join(process.cwd(), 'upload')));
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    },
+});
+
+const upload = multer({ storage: storage });
 app.get('/', (req, res) => {
     res.send('Selamat Datang di GlowList API');
 });
@@ -38,15 +51,15 @@ app.get('/produk', authJWT, (req, res) => {
     });
 });
 
-app.post('/produk', authJWT, (req, res) => {
-    const { judul, deskripsi, harga, id_kategori, nama_file } = req.body;
-    
+app.post('/produk', authJWT, upload.single('file'), (req, res) => {
+    const { judul, deskripsi, harga, id_kategori } = req.body;
+    const nama_file = req.file ? req.file.filename : null;
     
     if (!judul || !harga || !deskripsi) {
         return res.status(400).json({ message: 'judul, harga dan deskripsi wajib diisi' });
     }
     
-    const sql = 'INSERT INTO produk (judul, deskripsi, harga, id_kategori, nama_file, ) VALUES (?, ?, ?, ?, ?, NOW())';
+    const sql = 'INSERT INTO produk (judul, deskripsi, harga, id_kategori, nama_file, tgl_input) VALUES (?, ?, ?, ?, ?, NOW())';
     db.query(sql, [judul, deskripsi, harga, id_kategori, nama_file], (err, result) => {
         if(err) return res.status(500).json({ error: err.sqlMessage });
         res.json({
